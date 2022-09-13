@@ -2017,7 +2017,7 @@
         season: [],
         episode: []
       };
-      var quality = extractItems(decode(json.url));
+      var quality = json.url && extractItems(decode(json.url)) || '';
       if (json.seasons) {
         var select = $('<ul>' + json.seasons + '</ul>');
         $('.b-simple_season__item', select).each(function () {
@@ -2035,7 +2035,7 @@
           data.episode.push({
             name: $(this).text(),
             translator_id: translator_id,
-            quality: quality[0].label,
+            quality: quality && quality[0].label || '',
             season_id: $(this).attr('data-season_id'),
             episode_id: $(this).attr('data-episode_id')
           });
@@ -2333,7 +2333,7 @@
               Lampa.Storage.set('online_view', viewed);
             }
           }, function () {
-            Lampa.Noty.show(Lampa.Lang.translate('online_mod_nolink'));
+            Lampa.Noty.show(Lampa.Lang.translate('online_nolink'));
           });
         });
         component.append(item);

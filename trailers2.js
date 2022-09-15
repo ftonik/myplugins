@@ -2,7 +2,7 @@
     'use strict';
 
     var network = new Lampa.Reguest();
-    var api_url =  Lampa.TMDB.api('/movie');
+    var api_url =  Lampa.TMDB.api('movie');
     var key =  Lampa.TMDB.key();
 
     function get(url, page, resolve, reject) {
@@ -42,9 +42,9 @@
       get('/latest', 1, function (json) {
         append(Lampa.Lang.translate('trailers_added'), 'added', '/latest', json);
       }, status.error.bind(status));
-      get('youtube/rating', 1, function (json) {
+/*      get('youtube/rating', 1, function (json) {
         append('YouTube', 'rating', 'youtube/rating', json);
-      }, status.error.bind(status));
+      }, status.error.bind(status));*/
     }
 
     function full(params, oncomplite, onerror) {

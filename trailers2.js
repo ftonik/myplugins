@@ -8,7 +8,7 @@
       var account = Lampa.Storage.get('account', '{}');
 
       if (account.token) {
-        network.silent(api_url + url + '/' + page, resolve, reject, false, {
+        network.silent('https://api.themoviedb.org/3/movie/upcoming?api_key=4ef0d7355d9ffb5151e987764708ce96&language=ru&page=1', resolve, reject, false, {
           headers: {
             token: account.token
           }
@@ -33,6 +33,8 @@
       };
 
       var append = function append(title, name, url, json) {
+        console.log("_____________");
+        console.log(json);
         json.title = title;
         json.type = name;
         json.url = url;
@@ -685,6 +687,7 @@
 
     function startPlugin() {
       window.plugin_trailers_ready = true;
+      console.log("test")
       Lampa.Component.add('trailers_main', Component$1);
       Lampa.Component.add('trailers_full', Component);
       Lampa.Template.add('trailer', "\n        <div class=\"card selector card--trailer\">\n            <div class=\"card__view\">\n                <img src=\"./img/img_load.svg\" class=\"card__img\">\n            </div>\n            <div class=\"card__promo\">\n                <div class=\"card__promo-text\">\n                    <div class=\"card__title\"></div>\n                </div>\n                <div class=\"card__details\"></div>\n            </div>\n            <div class=\"card__play\">\n                <img src=\"./img/icons/player/play.svg\">\n            </div>\n        </div>\n    ");

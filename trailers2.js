@@ -370,8 +370,6 @@
       };
 
       this.append = function (element) {
-        console.log('test');
-        console.log(element);
         var item = new Line(element);
         item.create();
         item.onDown = this.down.bind(this);

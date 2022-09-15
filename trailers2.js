@@ -6,16 +6,14 @@
 
     function get(url, page, resolve, reject) {
       var account = Lampa.Storage.get('account', '{}');
+console.log('test2')
+console.log(account)
 
-      if (account.token) {
         network.silent('https://api.themoviedb.org/3/movie/upcoming?api_key=4ef0d7355d9ffb5151e987764708ce96&language=ru&page=1', resolve, reject, false, {
           headers: {
             token: account.token
           }
         });
-      } else {
-        reject();
-      }
     }
 
     function main(oncomplite, onerror) {

@@ -3,7 +3,7 @@
 
     var network = new Lampa.Reguest();
     var api_url =  Lampa.TMDB.api('/movie');
-    var key =  Lampa.TMDB.key;
+    var key =  Lampa.TMDB.key();
 
     function get(url, page, resolve, reject) {
         network.silent(`${api_url}${url}?api_key=${key}&page=${page}&language=ru`, resolve, reject, false, {});

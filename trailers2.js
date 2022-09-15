@@ -14,7 +14,7 @@
 
       status.onComplite = function () {
         var fulldata = [];
-        if (status.data.rating) fulldata.push(status.data.rating);
+       // if (status.data.rating) fulldata.push(status.data.rating);
         if (status.data.anticipated) fulldata.push(status.data.anticipated);
         if (status.data.popular) fulldata.push(status.data.popular);
         if (status.data.added) fulldata.push(status.data.added);
@@ -42,9 +42,9 @@
       get('/latest', 1, function (json) {
         append(Lampa.Lang.translate('trailers_added'), 'added', '/latest', json);
       }, status.error.bind(status));
-      get('/upcoming', 1, function (json) {
+/*      get('/upcoming', 1, function (json) {
         append('YouTube', 'rating', 'youtube/rating', json);
-      }, status.error.bind(status));
+      }, status.error.bind(status));*/
     }
 
     function full(params, oncomplite, onerror) {

@@ -1012,7 +1012,7 @@
 			select_title = itm.title || object.movie.title;
 			get_links_wait = true;
 			var prox = component.proxy('videocdn');
-			var url = prox ? prox + 'https://videocdn.tv/api/' : 'http://cdn.svetacdn.in/api/';
+			var url = prox ? prox + 'http://videocdn.tv/api/' : 'http://cdn.svetacdn.in/api/';
 			var type = itm.iframe_src.split('/').slice(-2)[0];
 			if (type == 'movie') type = 'movies';
 			if (type == 'anime') type = 'animes';
@@ -2121,7 +2121,6 @@
               file = '',
               quality = false;
           var items = extractItems(video);
-
           if (items && items.length) {
             file = items[0].file;
             quality = {};
@@ -3922,13 +3921,13 @@
 
             if (element.season && Lampa.Platform.version) {
               var playlist = [];
-              items.forEach(function (elem) {
+              items.forEach(function (elem, i) {
                 if (elem == element) {
                   playlist.push(first);
                 } else {
                   var cell = {
                     url: function url(call) {
-                      getStream(elem, function (elem, i) {
+                      getStream(elem, function (elem) {
                         cell.url = elem.stream;
                         cell.quality = elem.qualitys;
                         cell.subtitles = elem.subtitles;
@@ -6748,7 +6747,7 @@
           url = Lampa.Utils.addUrlComponent(url, 'api_token=qR0taraBKvEZULgjoIRj69AJ7O6Pgl9O');
         } else {
           var prox = _this2.proxy('videocdn');
-          url = prox ? prox + 'https://videocdn.tv/api/short' : 'http://cdn.svetacdn.in/api/short';
+          url = prox ? prox + 'http://videocdn.tv/api/short' : 'http://cdn.svetacdn.in/api/short';
           url = Lampa.Utils.addUrlComponent(url, 'api_token=3i40G5TSECmLF77oAqnEgbx61ZWaOYaE');
         }
 				
@@ -10163,8 +10162,8 @@
 				en: 'Codec'
 			},
 			title_online: {
-				ru: 'Онлайн',
-				uk: 'Онлайн',
+				ru: 'Онлайн MODS',
+				uk: 'Онлайн MODS',
 				en: 'Online'
 			},
 			title_online_continued: {

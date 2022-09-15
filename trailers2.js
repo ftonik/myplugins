@@ -42,9 +42,9 @@
       get('/latest', 1, function (json) {
         append(Lampa.Lang.translate('trailers_added'), 'added', '/latest', json);
       }, status.error.bind(status));
-/*      get('youtube/rating', 1, function (json) {
+      get('/upcoming', 1, function (json) {
         append('YouTube', 'rating', 'youtube/rating', json);
-      }, status.error.bind(status));*/
+      }, status.error.bind(status));
     }
 
     function full(params, oncomplite, onerror) {

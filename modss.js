@@ -3074,14 +3074,14 @@
 			voice_name: '', 
 			last_viewed: ''
 		};
-		var token = Lampa.Storage.get('filmix_token', '');
+		var token = Lampa.Storage.get('filmix_token', 'aaaabbbbccccddddeeeeffffaaaabbbb');
 		if (!window.filmix) {
 			window.filmix = {
 				max_qualitie: 720,
 				is_max_qualitie: false
 			};
 		}
-		var dev_token = '?user_dev_apk=1.1.6&user_dev_name=Xiaomi&user_dev_os=11&user_dev_token=' + token + '&user_dev_vendor=Xiaomi';
+		var dev_token = 'user_dev_apk=2.0.1&user_dev_id=&user_dev_name=Xiaomi&user_dev_os=11&user_dev_token=' + token + '&user_dev_vendor=Xiaomi';
 		/**
 		 * Начать поиск
 		 * @param {Object} _object 
@@ -3100,7 +3100,7 @@
 			url = Lampa.Utils.addUrlComponent(url, 'story=' + encodeURIComponent(clean_title));
 			network.clear();
 			network.timeout(15000);
-			network.silent(url, function (json) {
+			network.silent(url+'&'+dev_token, function (json) {
 				if (json.length == 0) component.emptyForQuery(select_title);
 				else {
   		    var cards = json.filter(function (c) {
@@ -3156,7 +3156,7 @@
 				window.filmix.is_max_qualitie = true;
 				network.clear();
 				network.timeout(10000);
-				network.silent(url + 'user_profile' + dev_token, function (found) {
+				network.silent(url + 'user_profile?' + dev_token, function (found) {
 					if (found && found.user_data) {
 						if (found.user_data.is_pro) window.filmix.max_qualitie = 1080;
 						if (found.user_data.is_pro_plus) window.filmix.max_qualitie = 2160;
@@ -3168,7 +3168,7 @@
 			function end_search(filmix_id) {
 				network.clear();
 				network.timeout(10000);
-				network.silent(window.filmix.is_max_qualitie ? url + 'post/' + filmix_id + dev_token : url + 'post/' + filmix_id, function (found) {
+				network.silent(window.filmix.is_max_qualitie ? url + 'post/' + filmix_id + '?' +dev_token : url + 'post/' + filmix_id, function (found) {
 					if (found && Lampa.Arrays.getKeys(found).length && (found.player_links.movie.length || Lampa.Arrays.getKeys(found.player_links.playlist).length)) {
 						success(found);
 						component.loading(false);
@@ -4818,7 +4818,7 @@
 			network.timeout(10000);
 			network.silent(hdvburl + 'v/' + element.translation + (element.season ? '/s/' + element.season : '') + (element.episode ? '/ep/' + element.episode : ''), function (str) {
 				//console.log('str', str );
-				if (str == 'VideoNotFound' || str == '10' || str.indexOf('error') > 0) {
+				if (str == '' || str == 'VideoNotFound' || str == '10' || str.indexOf('error') > 0) {
 					return error(str);
 				}
 				var result = results[element.translation];
@@ -6537,7 +6537,7 @@
 			var pr = 'https://cors.eu.org/';
 			var reserv = 'http://lampa.stream/prox/';
 			if (Lampa.Storage.field('mods_proxy_main') === true || (need == 'on' && need_url.length == 0 && prox == '')) proxy = myprox;
-			if ((need == 'on' || main) && name == 'videocdn' && (need_url.length == 0 || need_url.indexOf('cors.eu.org') > -1)) return reserv;
+			if ((need == 'on' || main) && name == 'videocdn' && (need_url.length == 0 || need_url.indexOf('cors.eu.org') > -1)) return '';
 			if ((need == 'on' || main) && name == 'kinobase' && (need_url.length == 0 || need_url.indexOf('cors.eu.org') > -1)) return myprox;
 			if ((need == 'on' || main) && name == 'cdnmovies' && need_url.length == 0) return reserv;
 			if ((need == 'on' || main) && name == 'hdrezka' && need_url.length == 0) return myprox;
@@ -10162,8 +10162,8 @@
 				en: 'Codec'
 			},
 			title_online: {
-				ru: 'Онлайн MODS',
-				uk: 'Онлайн MODS',
+				ru: 'Онлайн',
+				uk: 'Онлайн',
 				en: 'Online'
 			},
 			title_online_continued: {
@@ -11736,7 +11736,7 @@
 			}
 		}
 		function full$1(params, oncomplite, onerror) {
-			var status = new Lampa.Status(5);
+			var status = new Lampa.Status((Lampa.Storage.get('pro_pub', false)) ? 5 : 4);
 			status.onComplite = oncomplite;
 			var url = 'v1/items/' + params.id;
 			get$6(url, params, function (json) {
@@ -11796,7 +11796,7 @@
 				};
 				status.append('persons', persons(json));
 				status.append('movie', data.movie);
-				status.append('videos', videos(element));
+				if(Lampa.Storage.get('pro_pub', false)) status.append('videos', videos(element));
 			}, onerror);
 		}
 		function menu$1(params, oncomplite) {

@@ -3651,7 +3651,8 @@
       network.clear();
       network.timeout(10000);
       network.silent(url, function (json) {
-        if (json.data && Object.keys(json.data).length) display(json.data);
+					medias = json.medias;
+			  if (json.data && Object.keys(json.data).length) display(json.data);
         else if (object.movie.imdb_id) {
           network.clear();
           network.timeout(10000);
@@ -3864,7 +3865,7 @@
 										file: eps.file,
 										episode: parseInt(se.title.match(/\d+/)),
 										season: parseInt(data.title.match(/\d+/)),
-										quality: m[0].source_quality + ' - ' + m[0].quality + 'p',
+										quality: m.length ? (m[0].source_quality + ' - ' + m[0].quality + 'p') : '',
 										info: ' / ' + Lampa.Utils.shortText(eps.title, 50)
 									});
 								}
@@ -3878,7 +3879,7 @@
 					filtred.push({
 						file: data.file,
 						title: data.title,
-						quality: m[0].source_quality + ' - ' + m[0].quality + 'p',
+						quality: m.length ? (m[0].source_quality + ' - ' + m[0].quality + 'p') : '',
 						info: '',
 						subtitles: data.subtitle ? parseSubs(data.subtitle) : false
 					});

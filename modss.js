@@ -14,66 +14,11 @@
 
 	var Modss = {
 		init: function () {
-      this.tv_modss();
 			this.collections();
 			this.source_pub();
 			this.buttBack();
 			ForkTV.init();
 			this.radio();
-			
-			var balansers = [{
-        from: 'VideoCDN',
-        to: 'videocdn'
-      },{ 
-        from: 'HDRezka',
-        to: 'rezka'
-      },{ 
-        from: 'Kinobase',
-        to: 'kinobase'
-      },{ 
-        from: 'Collaps',
-        to: 'collaps'
-      },{ 
-        from: 'Filmix',
-        to: 'filmix'
-      },{ 
-        from: 'CDNmovies',
-        to: 'cdnmovies'
-      },{ 
-        from: 'HDVB',
-        to: 'hdvb'
-      },{ 
-        from: 'KinoTochka',
-        to: 'kinotochka'
-      },{ 
-        from: 'KinoKrad',
-        to: 'kinokrad'
-      },{ 
-        from: 'SeasonVar',
-        to: 'seasonvar'
-      },{ 
-        from: 'UAKino',
-        to: 'uakino'
-      },{ 
-        from: 'Pub',
-        to: 'pub'
-      },{ 
-        from: 'Kodik',
-        to: 'kodik'
-    }];
-    
-    if(Lampa.Storage.get('move_complite') !== true)
-    balansers.forEach(function(balanser){
-      var from = Lampa.Storage.get('online_choice_'+balanser.from,'{}');
-      var to   = Lampa.Storage.get('online_choice_'+balanser.to,'{}');
-    
-      for(var i in from){
-        to[i] = from[i];
-      }
-    
-      Lampa.Storage.set('online_choice_'+ balanser.to, to);
-      Lampa.Storage.set('move_complite',true);
-    });
 		},
 		radio: function () {
 			var ico = '<svg width="24px" height="24px" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="radioIconTitle" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" color="#000000"> <title id="radioIconTitle">Radio</title> <path d="M5.44972845 6C2.18342385 9.2663046 2.18342385 14.7336954 5.44972845 18M8.59918369 8C6.46693877 10.1322449 6.46693877 13.8677551 8.59918369 16M18.5502716 18C21.8165761 14.7336954 21.8165761 9.2663046 18.5502716 6M15.4008163 16C17.5330612 13.8677551 17.5330612 10.1322449 15.4008163 8"/> <circle cx="12" cy="12" r="1"/> </svg>';
@@ -88,21 +33,6 @@
 			});
 			if (Lampa.Storage.get('mods_radio')) $('body').find('.menu .menu__list').eq(0).append(menu_item);
 			else $('body').find('[data-action="Radio_n"]').remove();
-		},
-		tv_modss: function () {
-			var ico = '<svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" color="#fff" fill="currentColor" class="bi bi-tv"><path d="M2.5 13.5A.5.5 0 0 1 3 13h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zM13.991 3l.024.001a1.46 1.46 0 0 1 .538.143.757.757 0 0 1 .302.254c.067.1.145.277.145.602v5.991l-.001.024a1.464 1.464 0 0 1-.143.538.758.758 0 0 1-.254.302c-.1.067-.277.145-.602.145H2.009l-.024-.001a1.464 1.464 0 0 1-.538-.143.758.758 0 0 1-.302-.254C1.078 10.502 1 10.325 1 10V4.009l.001-.024a1.46 1.46 0 0 1 .143-.538.758.758 0 0 1 .254-.302C1.498 3.078 1.675 3 2 3h11.991zM14 2H2C0 2 0 4 0 4v6c0 2 2 2 2 2h12c2 0 2-2 2-2V4c0-2-2-2-2-2z"/></svg>';
-			var menu_item = $('<li class="menu__item selector focus" data-action="modss_tv"><div class="menu__ico">' + ico + '</div><div class="menu__text">TV-Modss</div></li>');
-			menu_item.on('hover:enter', function () {
-				Lampa.Activity.push({
-					url: (Lampa.Storage.get('mods_tv_url') && Lampa.Storage.get('mods_tv_source') == 'url') ? Lampa.Storage.get('mods_tv_url') : Lampa.Storage.get('mods_tv_source') == 'free' ? 'http://lampatv.fun/json/all_freetv.json' : 'http://cdn.kulik.uz/tv/all.json',
-					title: 'MODS\'s TV',
-					component: 'modss_tv',
-					page: 1
-				});
-			});
-			$('.menu .menu__list').eq(0).append(menu_item);
-			if (Lampa.Storage.get('mods_tv')) $('body').find('.menu .menu__list').eq(0).append(menu_item);
-			else $('body').find('[data-action="modss_tv"]').remove();
 		},
 		source_pub: function () {
 			if (Lampa.Storage.field('mods_pub')) {
@@ -277,136 +207,39 @@
 			}
 		}, 
 	  rating_kp_imdb:function (card) {
-			var params = {
-				movie: card.title,
-				id: card.id,
-				url_kp: "http://kinopoiskapiunofficial.tech/",
-  			headers: {
-  				'X-API-KEY': '2a4a0808-81a3-40ae-b0d3-e11335ede616'
-  			},
-				cache_time: 60 * 60 * 48 * 1000 //86400000 сек = 1день Время кэша в секундах
-			};
+			var relise = (card.number_of_seasons ? card.first_air_date : card.release_date) || '0000';
+			var year = parseInt((relise + '').slice(0, 4));
+  		
   		if (Lampa.Storage.field('mods_rating') && $('.rate--kp', Lampa.Activity.active().activity.render()).hasClass('hide') && !$('.wait_rating', Lampa.Activity.active().activity.render()).length) 
 			getRating();
-
-			function getRating() {
-				var network = new Lampa.Reguest();
-				var movieRating = _getCache(params.id);
+    
+    	function getRating() {
 				$('.info__rate', Lampa.Activity.active().activity.render()).after('<div style="width:2em;margin-top:1em;margin-right:1em" class="wait_rating"><div class="broadcast__scan"><div></div></div><div>');
-				if (movieRating) {
-					return _showRating(movieRating[params.id]);
-				} else {
-					var relise = (card.number_of_seasons ? card.first_air_date : card.release_date) || '0000';
-					var year = parseInt((relise + '').slice(0, 4));
-					/*network.clear();
-					network.timeout(5000);
-					network.silent(params.url_kp + 'api/v2.1/films/search-by-keyword?keyword=' + encodeURIComponent(params.movie) +' '+year, function(json) {
-  				if(json.films.length) {
-						var id = json.films[0].filmId;
-    				network.clear();
-    				network.timeout(5000);
-						network.silent(params.url_kp + 'api/v2.2/films/' + id, function(data) {
-							movieRating = _setCache(params.id, {
-								kp: data.ratingKinopoisk,
-								imdb: data.ratingImdb,
-								timestamp: new Date().getTime()
-							}); // Кешируем данные
-							return _showRating(movieRating, params.id);
-						}, function(a, c) {
-							Lampa.Noty.show(network.errorDecode(a, c));
-						}, false, {
-							headers: params.headers
-						});
-					} else {
-						movieRating = _setCache(params.id, {
-							kp: 0,
-							imdb: 0,
-							timestamp: new Date().getTime()
-						}); // Кешируем данные
-						return _showRating(movieRating);
-					}
-  				}, function(a, c) {
-  					kp_rating();
-  				}, false, {
-  					headers: params.headers
-  				});
-  				*/
-  				network.clear();
-  				network.timeout(5000);
-  				network.silent(API + 'kp/' + encodeURIComponent(params.movie) + ' ' + year, function (json) {
-  					if (json.films.length) {
-  						var id = json.films[0].filmId;
-    					network.clear();
-    					network.timeout(5000);
-  						network.silent(API + 'kp_Id/' + id, function (data) {
-  							movieRating = _setCache(params.id, {
-  								kp: data.kp_rating,
-  								imdb: data.imdb_rating,
-  								timestamp: new Date().getTime()
-  							}); // Кешируем данные
-  							return _showRating(movieRating, params.id);
-  						}, function (a, c) {
-  							Lampa.Noty.show(network.errorDecode(a, c));
-  						});
-  					} else {
-  						movieRating = _setCache(params.id, {
-  							kp: 0,
-  							imdb: 0,
-  							timestamp: new Date().getTime()
-  						}); // Кешируем данные
-  						return _showRating(movieRating);
-  					}
-  				}, function (a, c) {
-  					Lampa.Noty.show('Рейтинг KP   ' + network.errorDecode(a, c));
-  				});
-				}
+				Pub.network.clear();
+  				Pub.network.timeout(5000);
+  				Pub.network.silent('http://api.lampa.stream/KPrating', function (json) {
+    				var kp = json.data.kp_rating;
+  					var imdb = json.data.imdb_rating;
+  					var kp_rating = !isNaN(kp) && kp !== null ? parseFloat(kp).toFixed(1) : '0.0';
+  					var imdb_rating = !isNaN(imdb) && imdb !== null ? parseFloat(imdb).toFixed(1) : '0.0';
+  					$('.wait_rating',Lampa.Activity.active().activity.render()).remove();
+  					$('.rate--imdb', Lampa.Activity.active().activity.render()).removeClass('hide').find('> div').eq(0).text(imdb_rating);
+  					$('.rate--kp', Lampa.Activity.active().activity.render()).removeClass('hide').find('> div').eq(0).text(kp_rating);
+    			}, function (a, c) {
+  					Lampa.Noty.show('ОШИБКА Рейтинг KP   ' + Pub.network.errorDecode(a, c));
+  				}, {
+  				  title:card.title, 
+  				  year: year, 
+  				  card_id:card.id, 
+  				  imdb: card.imdb_id
+  				}); 
 			}
-		
-			function _getCache(movie) {
-				var timestamp = new Date().getTime();
-				var cache = Lampa.Storage.cache('kp_rating', 5000, {}); //500 это лимит ключей
-				if (cache[movie]) {
-					if ((timestamp - cache[movie].timestamp) > params.cache_time) {
-						// Если кеш истёк, чистим его
-						delete cache[movie];
-						Lampa.Storage.set('kp_rating', cache);
-						return false;
-					}
-				} else return false;
-				return cache;
-			}
-
-			function _setCache(movie, data) {
-				var timestamp = new Date().getTime();
-				var cache = Lampa.Storage.cache('kp_rating', 5000, {}); //500 это лимит ключей
-				if (!cache[movie]) {
-					cache[movie] = data;
-					Lampa.Storage.set('kp_rating', cache);
-				} else {
-					if ((timestamp - cache[movie].timestamp) > params.cache_time) {
-						data.timestamp = timestamp;
-						cache[movie] = data;
-						Lampa.Storage.set('kp_rating', cache);
-					} else data = cache[movie];
-				}
-				return data;
-			}
-
-			function _showRating(data, movie) {
-				if (data) {
-					var kp_rating = !isNaN(data.kp) && data.kp !== null ? parseFloat(data.kp).toFixed(1) : '0.0';
-					var imdb_rating = !isNaN(data.imdb) && data.imdb !== null ? parseFloat(data.imdb).toFixed(1) : '0.0';
-					$('.wait_rating',Lampa.Activity.active().activity.render()).remove();
-					$('.rate--imdb', Lampa.Activity.active().activity.render()).removeClass('hide').find('> div').eq(0).text(imdb_rating);
-					$('.rate--kp', Lampa.Activity.active().activity.render()).removeClass('hide').find('> div').eq(0).text(kp_rating);
-				}
-  			}
 		}
 	};
 	var Filmix = {
 		network: new Lampa.Reguest(),
 		api_url: 'http://filmixapp.cyou/api/v2/',
-		user_dev: '?user_dev_apk=1.1.6&user_dev_id=' + Lampa.Utils.uid(16) + '&user_dev_name=Xiaomi&user_dev_os=11&user_dev_vendor=Xiaomi&user_dev_token=',
+		user_dev: '?user_dev_apk=2.0.1&user_dev_id=' + Lampa.Utils.uid(16) + '&user_dev_name=Xiaomi&user_dev_os=11&user_dev_vendor=Xiaomi&user_dev_token=',
 		add_new: function () {
 			var user_code = '';
 			var user_token = '';
@@ -4313,7 +4146,7 @@
 			over: true,
 			step: 250
 		});
-		var balanser = Lampa.Storage.get('onlines_balanser', 'videocdn');
+		var balanser = Lampa.Storage.get('onlines_balanser', 'filmix');
 		var last_bls = Lampa.Storage.cache('online_last_balanser', 200, {});
 		var contextmenu_all = [];
 		if (typeof object == 'object') {
@@ -4333,7 +4166,7 @@
 			var pr = 'https://cors.eu.org/';
 			var reserv = 'http://lampa.stream/prox/';
 			if (Lampa.Storage.field('mods_proxy_main') === true || (need == 'on' && need_url.length == 0 && prox == '')) proxy = myprox;
-			if ((need == 'on' || main) && name == 'videocdn' && (need_url.length == 0 || need_url.indexOf('cors.eu.org') > -1)) return myprox;
+			if ((need == 'on' || main) && name == 'videocdn' && (need_url.length == 0 || need_url.indexOf('cors.eu.org') > -1)) return '';
 			if ((need == 'on' || main) && name == 'kinobase' && (need_url.length == 0 || need_url.indexOf('cors.eu.org') > -1)) return myprox;
 			if ((need == 'on' || main) && name == 'cdnmovies' && need_url.length == 0) return reserv;
 			if ((need == 'on' || main) && name == 'hdrezka' && need_url.length == 0) return myprox;
@@ -4395,8 +4228,8 @@
 		// шаловливые ручки
 		if ((typeof object == 'object') && !object.movie.number_of_seasons) filter_sources.push('kinotochka', 'kinokrad');		if (Lampa.Storage.get('pro_pub', false)) filter_sources.push('pub');
 		if (filter_sources.indexOf(balanser) == -1) {
-			balanser = 'videocdn';
-			Lampa.Storage.set('onlines_balanser', 'videocdn');
+			balanser = 'filmix';
+			Lampa.Storage.set('onlines_balanser', 'filmix');
 		}
 		
 		scroll.body().addClass('torrent-list');
@@ -5921,922 +5754,8 @@
   		body = null;
   	};
   }
-  
-  function modss_tv(object) {
-  	var network = new Lampa.Reguest();
-  	var scroll = new Lampa.Scroll({
-  		mask: true,
-  		over: true
-  	});
-  	var items = [];
-  	var html = $('<div class="modss_tv"></div>');
-  	var body = $('<div class="category-full"></div>');
-  	var filter = new Lampa.Filter(object);
-  	var filter_sources = [];
-  	var results = [];
-  	var active = 0;
-  	var last;
-  	var _this1 = this;
-  	var searched = false;
-  	var cache = Lampa.Storage.cache('fav_chns', 5000, {});
-  	var cache_cat = Lampa.Storage.cache('Modss_tv_cat', 10, {});
-  	var cache_name = object.url.indexOf('forktv') > -1 ? 'forktv' : object.url.indexOf('pub/tv') > -1 ? 'pubTv' : object.url;
-  	var timer;
-  	var prox_img = 'https://cors.eu.org/';
-  	if (Lampa.Storage.field('mods_tv_butt_ch')) Lampa.Keypad.listener.follow('keydown', function (e) {
-  		var next = e.code === 427 || e.code === 33;
-  		var prev = e.code === 428 || e.code === 34;
-  		// Lampa.Noty.show('code_ '+ code);
-  		if (Lampa.Player.opened()) {
-  			if (prev) {
-  				Lampa.PlayerPlaylist.prev();
-  				//$('body').find('.player-panel__prev.button.selector').click();
-  				// console.log ("[P- button hit]");
-  			}
-  			if (next) {
-  				Lampa.PlayerPlaylist.next();
-  				//$('body').find('.player-panel__next.button.selector').click();
-  				//console.log ("[P+ button hit]");
-  			}
-  		}
-  	});
-  	this.create = function () {
-  		var _this = this;
-  		this.activity.loader(true);
-   		if (object.url.indexOf('.json') > -1 || object.url.indexOf('pub/tv') > -1) {
-  			network.silent(object.url, this.build.bind(this), function (json) {
-  				var empty = new Lampa.Empty();
-  				html.append(empty.render());
-  				_this.start = empty.start;
-  				_this.activity.loader(false);
-  				_this.activity.toggle();
-  			});
-  		} else _this.parsePlaylist();
-  		
-  		function include(url) {
-        var script = document.createElement('script');
-        script.src = url;
-        document.getElementsByTagName('head')[0].appendChild(script);
-      }
-  		include('https://www.googletagmanager.com/gtag/js?id=G-VCR95LEVXD');
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-VCR95LEVXD');
-  		Lampa.Background.immediately('http://lampa.stream/tv_bg.jpg');
-  		return this.render();
-  	};
-  	this.parsePlaylist = function (prox) {
-  	  var p = (object.url.match(/forktv/) == null && (/*object.url.match(/m3u|m3u8/) || */prox == true) && 'http://corsanywhere.herokuapp.com/' || '');
-  	  network.clear();
-  	  network.timeout(15 * 1000);
-  	  network.silent(p + object.url, function (resp) {
-				resp = String(resp).replace(/\n\s/g, '');
-				resp = resp.replace(/\n/g, '"');
-				resp = resp.replace(/group-title|timegroup/g, 'group');
-				resp = resp.replace(/#EXTGRP:/g, 'group="');
-				resp = resp.split(/#EXTINF:-1|#EXTINF:0/);
-				var data = [];
-				resp.forEach(function (res, key) {
-					var group = res.match(/group="([^"]*)"|group="([^"]*)"\s/),
-						tvlogo = res.match(/tvg-logo="(.*?)"(\s|,)/),
-						logo = res.match(/\slogo="(.*?)"(\s|,)/),
-						name = res.match(/,([^"]*)"(group|http|#)/),
-						id = res.match(/tvg-id="([^"]*)"/) || res.match(/channelId="(\d+)"/),
-						stream = res.match(/"([^"]*)"$/);
-					var obj = {
-						name: name && name[1] || '',
-						group: group && Lampa.Utils.capitalizeFirstLetter(group[1]) || '',
-						video: stream && stream[1] || '',
-						tvlogo: tvlogo && tvlogo[1] || '',
-						logo: logo && logo[1] || '',
-						id: id && id[id.length - 1] || ''
-					};
-  				if (obj.name && obj.video) data.push(obj);
-  			});
-				if(data.length) _this1.build(data);
-				else _this1.empty();
-			}, function (a, c) {
-			  if(a.status == 404) Lampa.Noty.show(network.errorDecode(a, c));
-			  else _this1.parsePlaylist(true);
-			}, false, {
-				dataType: 'text'
-			});
-  	};
-  	this.saveCats = function () {
-  		var item = [];
-  		if (!cache_cat[cache_name]) {
-  			var c = {};
-  			for (var key in results) {
-  				item.push({
-  					title: key,
-  					checkbox: true
-  				});
-  			}
-  			cache_cat[cache_name] = item;
-  			Lampa.Storage.set('Modss_tv_cat', cache_cat);
-  		}
-  		var p = (cache_cat && cache_cat[cache_name] || item).filter(function (i) {
-  			return i.checked;
-  		}).map(function (i) {
-  			return i.title;
-  		});
-  		Lampa.Arrays.getKeys(results).forEach(function (f) {
-  			if (p.length > 0) {
-  				if (p.indexOf(f) > -1) filter_sources.push({
-  					title: f
-  				});
-  			} else filter_sources.push({
-  				title: f
-  			});
-  		});
-  		if (!filter_sources.find(function (a) {
-  				return a.selected;
-  			}));
-  		var lasts = Lampa.Storage.get('mods_tv_last_cat', filter_sources[0] && filter_sources[0].title);
-  		filter_sources.forEach(function (i, k) {
-  			if (i.title == lasts) filter_sources[k].selected = true;
-  		});
-  		var fil = filter_sources.find(function (a) {
-  			return a.selected;
-  		});
-  		return fil;
-  	};
-  	this.create_cats = function () {
-  		var _this = this;
-  		var item = [];
-  		if (!cache_cat[cache_name]) {
-  			for (var key in results) {
-  				item.push({
-  					title: key,
-  					checkbox: true
-  				});
-  			}
-  		} else item = cache_cat[cache_name];
-  
-  		function select(where, a) {
-  			where.forEach(function (element) {
-  				element.selected = false;
-  			});
-  			a.selected = true;
-  		}
-  
-  		function main() {
-  			var catg = [];
-  			item.forEach(function (a) {
-  				catg.push(a);
-  			});
-  			if (catg.length > 0) {
-  				cache_cat[cache_name] = catg;
-  				Lampa.Storage.set('Modss_tv_cat', cache_cat);
-  				var next = Lampa.Arrays.clone(object);
-  				delete next.activity;
-  				Lampa.Activity.push(next);
-  			}
-  			Lampa.Controller.toggle('content');
-  		}
-  		Lampa.Select.show({
-  			items: item,
-  			title: cache_cat[cache_name] ? Lampa.Lang.translate('title_fork_edit_cats') : Lampa.Lang.translate('title_fork_add_cats'),
-  			onBack: main,
-  			onSelect: function onSelect(a) {
-  				select(item, a);
-  				main();
-  			}
-  		});
-  	};
-  	this.biuldFilter = function () {
-  		var _this5 = this;
-  		function push_cont(a) {
-  			_this5.clear(false);
-  			Lampa.Storage.set('mods_tv_last_cat', a.title);
-  			_this5.append_v(results[a.title]);
-  			setTimeout(Lampa.Select.close, 10);
-  			_this5.updateFilter([]);
-  		}
-  		filter.render().find('.filter--search').unbind('hover:enter').on('hover:enter', function (e) {
-  			Lampa.Input.edit({
-  				value: "",
-  				title: "Введите имя канала",
-  				free: true
-  			}, function (t) {
-  				if (!t) {
-  					Lampa.Controller.toggle('content');
-  					return;
-  				}
-  				var data = [];
-  				Lampa.Arrays.getValues(results).forEach(function (i) {
-  					i.find(function (l) {
-  						if (l.name && encodeURIComponent(l.name.trim().toLowerCase()).match(encodeURIComponent(t.trim().toLowerCase()))) data.push(l);
-  					});
-  				});
-  				_this5.clear(true);
-  				searched = true;
-  				
-  				_this5.build();
-  				_this5.append_v(data);
-  			});
-  		});
-  		filter.render().find('.filter--filter').on('hover:enter', function (e) {
-  			last = e.target;
-  		});
-  		filter.render().find('.filter--sort').on('hover:enter', function () {
-  			_this5.create_cats();
-  		});
-  		filter.render().find('.selector').on('hover:focus', function () {
-  			scroll.update($(this))
-  		})
-  		filter.render().find('.filter--search span').text(Lampa.Lang.translate('search'));
-  		filter.render().find('.filter--filter span').text(Lampa.Lang.translate('title_category'));
-  		filter.onSelect = function (type, a, b) {
-  			if (type == 'filter') {
-  				if ((a.title == '18+' || a.title == 'Ночная лампа' || a.title == 'Эротика') && Lampa.Storage.get('mods_password')) {
-  					_this5.password(function () {
-  						push_cont(a);
-  					});
-  				} else push_cont(a);
-  			}
-  		};
-  		filter.onBack = function () {
-  			Lampa.Controller.toggle('content');
-  		};
-  	};
-  	this.updateFilter = function (data) {
-  		var _this = this;
-  		var fil = filter_sources.find(function (a) {
-  			return a.selected;
-  		});
-  		filter.set('sort', filter_sources);
-  		if (Lampa.Storage.field('mods_tv_style') == 'vert') filter.set('filter', filter_sources);
-  		filter.chosen('filter', [fil && fil.title || filter_sources[0] && filter_sources[0].title] || cache_cat && cache_cat[0].title);
-  	};
-  	this.build = function (data) {
-  		var _this = this;
-  		scroll.minus();
-  		html.append(scroll.render());
-  		if (Lampa.Storage.field('mods_tv_style') !== 'cats') scroll.append(filter.render().removeClass('scroll--nopadding'));
-  		scroll.append(body);
-  		this.biuldFilter();
-			var fav = [];
-	    data && data.forEach(function(itm){
-			  Lampa.Arrays.getValues(cache[cache_name]).filter(function(name){
-  		    if(itm.name == name) fav.push(itm);
-		    });
-	    });
-		  if (Lampa.Arrays.getKeys(cache[cache_name]).length){
-  			if (Lampa.Storage.field('mods_tv_style') == 'line') _this.append_l({
-  				title: 'Избранные каналы',
-  				results: fav
-  			});
-  			else {
-  				if(cache_name !== 'forktv') filter_sources.push({
-  					title: 'Избранные'
-  				});
-  				results['Избранные'] = fav;
-  			}
-  		}
-  		if (data && (data.length || Lampa.Arrays.getKeys(data).length)) {
-  			data.forEach(function (element) {
-  				if (results[element.group || 'IPTV']) results[element.group || 'IPTV'].push(element);
-  				else results[element.group || 'IPTV'] = [element];
-  			});
-  			if (Lampa.Storage.field('mods_tv_style') == 'cats') {
-  				var cards = [];
-  				Lampa.Arrays.getKeys(results).forEach(function (e) {
-  					cards.push({
-  						name: e,
-  						picture: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIj48cGF0aCBkPSJNNDMwLjEgMTkySDgxLjljLTE3LjcgMC0xOC42IDkuMi0xNy42IDIwLjVsMTMgMTgzYy45IDExLjIgMy41IDIwLjUgMjEuMSAyMC41aDMxNi4yYzE4IDAgMjAuMS05LjIgMjEuMS0yMC41bDEyLjEtMTg1LjNjLjktMTEuMiAwLTE4LjItMTcuNy0xOC4yek00MjYuMiAxNDMuM2MtLjUtMTIuNC00LjUtMTUuMy0xNS4xLTE1LjNIMjY3LjljLTIxLjggMC0yNC40LjMtNDAuOS0xNy40LTEzLjctMTQuOC04LjMtMTQuNi0zNi42LTE0LjZoLTc1LjNjLTE3LjQgMC0yMy42LTEuNS0yNS4yIDE2LjYtMS41IDE2LjctNSA1Ny4yLTUuNSA2My40aDM0My40bC0xLjYtMzIuN3oiIGZpbGw9IiM1NDUxNTEiIGNsYXNzPSJmaWxsLTAwMDAwMCI+PC9wYXRoPjwvc3ZnPg==',
-  						results: results[e]
-  					});
-  				});
-  				_this.append_v(cards);
-  			} else if (Lampa.Storage.field('mods_tv_style') == 'line') {
-  				if (Lampa.Arrays.getKeys(results).length == 1) _this.append_v(results['IPTV']);
-  				else {
-  					_this.saveCats();
-  					for (var key in results)
-  						if (filter_sources.find(function (a) {
-  								return a.title == key;
-  							})) _this.append_l({
-  							title: key,
-  							results: results[key]
-  						});
-  				}
-  			} else {
-  				var fil = _this.saveCats();
-  				if ((fil && (fil.title == '18+' || fil.title == 'Ночная лампа' || fil.title == 'Эротика')) && Lampa.Storage.get('mods_password')) {
-  					setTimeout(function () {
-  						_this.password(function () {
-  							_this.append_v(results[fil && fil.title || filter_sources[0] && filter_sources[0].title]);
-  						});
-  					}, 50);
-  				} else _this.append_v(results[fil && fil.title || filter_sources[0] && filter_sources[0].title]);
-  			}
-  		}
-  		this.updateFilter([]);
-  		this.activity.loader(false);
-  		this.activity.toggle();
-  	};
-  	this.append_v = function (data) {
-  		var _this3 = this;
-  		data.forEach(function (element) {
-  			var card = Lampa.Template.get('card', {
-  				title: element.name,
-  				release_year: ''
-  			}).attr('data-url', element.video).attr('data-id', element.id);
-  			card.addClass('card--collection');
-  			if (/iPhone|x11|nt/i.test(navigator.userAgent) && !Lampa.Platform.is('android')) card.addClass('tv_pc');
-  			if (Lampa.Platform.tv() || /SMART-TV/i.test(navigator.userAgent)) card.addClass('tv_tv');
-  			if (/iPhone|android/i.test(navigator.userAgent) || (Lampa.Platform.is('android') && window.innerHeight > 600)) card.addClass('mobile_tv');
-  			var img = card.find('.card__img')[0];
-  			var image = element.tvlogo || element.logo || element.picture || 'http://lampa.stream/epg/img/' + encodeURIComponent(element.name.trim()) + '.png';
-  			img.onload = function () {
-  				card.addClass('card--loaded');
-  			};
-  			img.onerror = function (e) {
-  			  if(image) img.src = prox_img + image;
-  				else img.src = './img/img_broken.svg';
-  			};
-  			img.src = image;
-  			if (cache[cache_name] && cache[cache_name].indexOf(element.name) > - 1) _this1.addicon('book', card);
-  			//console.log('class', card[0].className, 'Platform', Lampa.Platform.get())
-  			card.on('hover:focus', function () {
-  				last = card[0];
-  				scroll.update(card, true);
-  			}).on('hover:long', function () {
-  				var enabled = Lampa.Controller.enabled().name;
-  				var menu = [{
-  					title: 'Открыть ТВ Программу',
-  					epg: true
-    					}, {
-  					title: (!cache[cache_name] || cache[cache_name]&&cache[cache_name].indexOf(element.name) == - 1) ? 'Добавить в избранное' : 'Удалить из избранного',
-  					fav: true
-    					}, {
-  					title: 'Копировать ссылку',
-  					copy: true
-    					}];
-  				if (Lampa.Platform.is('android')) {
-  					menu.push({
-  						title: Lampa.Lang.translate('player_lauch') + ' - Android',
-  						player: 'android'
-  					});
-  				}
-  				Lampa.Select.show({
-  					title: Lampa.Lang.translate('title_action'),
-  					items: menu,
-  					onBack: function onBack() {
-  						Lampa.Controller.toggle(enabled);
-  					},
-  					onSelect: function onSelect(a) {
-  						if (a.epg) _this1.tvtable({
-  							name: element.name,
-  							id: element.id
-  						}, 'tvtable');
-  						if (a.fav) {
-  							_this1.favorite(element, card);
-  							Lampa.Controller.toggle(enabled);
-  						}
-  						if (a.copy) {
-  							Lampa.Utils.copyTextToClipboard(element.video, function () {
-  								Lampa.Noty.show(Lampa.Lang.translate('filmix_copy_secuses'));
-  							}, function () {
-  								Lampa.Noty.show(Lampa.Lang.translate('filmix_copy_fail'));
-  							});
-  						}
-  						Lampa.Controller.toggle(enabled);
-  						if (a.player) {
-  							Lampa.Player.runas(a.player);
-  							card.trigger('hover:enter');
-  						}
-  					}
-  				});
-  			}).on('hover:enter', function () {
-  				function added() {
-  					if (element.results) {
-  						_this3.clear();
-  						searched = true;
-  						_this3.append_v(element.results);
-  						Lampa.Controller.toggle('content');
-  					} else {
-  						if (element.video.match(/png|jpeg|jpg|bmp/)) return;
-  						var first = {
-  							title: element.name,
-  							url: element.video
-  						};
-  						var playlist = [];
-  						data.forEach(function (elem, i) {
-  							playlist.push({
-  								title: ++i + ' - ' + elem.name,
-  								url: elem.video,
-  								id: elem.id
-  							});
-  						});
-  						if (playlist.length > 1) first.playlist = playlist;
-  						Lampa.Player.play(first);
-  						Lampa.Player.playlist(playlist);
-  						_this1.tvtable({
-  							name: element.name,
-  							id: element.id
-  						}, 'player');
-  					}
-  				}
-  				if ((element.name == '18+' || element.name == 'Ночная лампа' || element.name == 'Эротика') && Lampa.Storage.get('mods_password')) {
-  					_this3.password(function () {
-  						added();
-  					});
-  				} else added();
-  			});
-  			body.append(card);
-  			items.push(card);
-  		});
-  	};
-  	this.append_l = function (element) {
-  		var _this = this;
-  		var item = new _this.creates(element);
-  		item.create();
-  		item.onDown = this.down.bind(this);
-  		item.onUp = this.up.bind(this);
-  		item.onBack = this.back.bind(this);
-  		scroll.append(item.render());
-  		items.push(item);
-  	};
-  	this.creates = function (data) {
-  		var content = Lampa.Template.get('items_line', {
-  			title: data.title
-  		});
-  		var body = content.find('.items-line__body');
-  		var scroll = new Lampa.Scroll({
-  			horizontal: true,
-  			step: 300
-  		});
-  		var items = [];
-  		var active = 0;
-  		var last;
-  		this.create = function () {
-  			scroll.render().find('.scroll__body').addClass('items-cards');
-  			content.find('.items-line__title').text(data.title + ' (' + data.results.length + ')');
-  			data.results.forEach(this.append.bind(this));
-  			body.append(scroll.render());
-  		};
-  		this.item = function (data) {
-  			var _this = this;
-  			var item = Lampa.Template.get('hdgo_item', {
-  				title: data.name
-  			}).attr('data-url', data.video).attr('data-id', data.id);
-  			item.addClass('card--collection').find('.card__age').remove();
-  			if ((data.group == '18+' || data.group == 'Ночная лампа' || data.group == 'Эротика') && Lampa.Storage.get('mods_password')) item.addClass('nuamtv');
-  			if (/iPhone|x11|nt/i.test(navigator.userAgent) && !Lampa.Platform.is('android')) item.addClass('hdgo pc');
-  			if (Lampa.Platform.tv() || /SMART-TV/i.test(navigator.userAgent)) item.addClass('hdgo tv');
-  			if (/iPhone|android/i.test(navigator.userAgent) || (Lampa.Platform.is('android') && window.innerHeight > 600)) item.addClass('mobile');
-  			var img = item.find('img')[0];
-  			var image = data.picture || data.tvlogo || data.logo || 'http://lampa.stream/epg/img/' + encodeURIComponent(data.name.trim()) + '.png';
-  			img.onerror = function () {
-  				if(image) img.src = prox_img + image;
-  				else img.src = './img/img_broken.svg';
-  			};
-  			img.src = image;
-  			this.render = function () {
-  				return item;
-  			};
-  			this.destroy = function () {
-  				img.onerror = function () {};
-  				img.onload = function () {};
-  				img.src = '';
-  				item.remove();
-  			};
-  		};
-  		this.append = function (element) {
-  			var _this = this;
-  			var item$1 = new _this.item(element);
-  			if (data.title.indexOf('Избранные') > - 1 || cache[cache_name]&&cache[cache_name].indexOf(element.name) > - 1) _this1.addicon('book', item$1.render());
-  			item$1.render().on('hover:focus', function () {
-  				last = item$1.render()[0];
-  				active = items.indexOf(item$1);
-  				scroll.update(items[active].render(), true);
-  			}).on('hover:long', function () {
-  				var enabled = Lampa.Controller.enabled().name;
-  				var menu = [{
-  					title: 'Открыть ТВ Программу',
-  					epg: true
-  			  		}, {
-  					title: (!cache[cache_name] || cache[cache_name].indexOf(element.name) == - 1) ? 'Добавить в избранное' : 'Удалить из избранного',
-  					fav: true
-  					  }, {
-  					title: 'Копировать ссылку',
-  					copy: true
-  				  	}];
-  				if (Lampa.Platform.is('android')) {
-  					menu.push({
-  						title: Lampa.Lang.translate('player_lauch') + ' - Android',
-  						player: 'android'
-  					});
-  				}
-  				Lampa.Select.show({
-  					title: Lampa.Lang.translate('title_action'),
-  					items: menu,
-  					onBack: function onBack() {
-  						Lampa.Controller.toggle(enabled);
-  					},
-  					onSelect: function onSelect(a) {
-  						if (a.epg) _this1.tvtable({
-  							name: element.name,
-  							id: element.id
-  						}, 'tvtable');
-  						if (a.fav) {
-  							_this1.favorite(element, items[active].render());
-  							Lampa.Controller.toggle(enabled);
-  						}
-  						if (a.copy) {
-  							Lampa.Utils.copyTextToClipboard(element.video, function () {
-  								Lampa.Noty.show(Lampa.Lang.translate('filmix_copy_secuses'));
-  							}, function () {
-  								Lampa.Noty.show(Lampa.Lang.translate('filmix_copy_fail'));
-  							});
-  						}
-  						Lampa.Controller.toggle(enabled);
-  						if (a.player) {
-  							Lampa.Player.runas(a.player);
-  							item$1.render().trigger('hover:enter');
-  						}
-  					}
-  				});
-  			}).on('hover:enter', function () {
-  				function play() {
-  					if (element.video.match(/png|jpeg|jpg|bmp/)) return;
-  					var first = {
-  						title: element.name,
-  						url: element.video
-  					};
-  					var playlist = [];
-  					items.forEach(function (elem, i) {
-  						playlist.push({
-  							title: ++i + ' - ' + $(elem.render()).text(),
-  							url: $(elem.render()).attr('data-url'),
-  							id: $(elem.render()).attr('data-id')
-  						});
-  					});
-  					if (playlist.length > 1) first.playlist = playlist;
-  					Lampa.Player.play(first);
-  					Lampa.Player.playlist(playlist);
-  					_this1.tvtable({
-  						name: element.name,
-  						id: element.id
-  					}, 'player');
-  				}
-  				if ((element.group == '18+' || element.group == 'Ночная лампа' || element.group == 'Эротика') && Lampa.Storage.get('mods_password')) {
-  					_this1.password(function () {
-  						play();
-  					});
-  				} else play();
-  			});
-  			scroll.append(item$1.render());
-  			items.push(item$1);
-  		};
-  		this.toggle = function () {
-  			var _this = this;
-  			Lampa.Controller.add('tv_line', {
-  				toggle: function toggle() {
-  					Lampa.Controller.collectionSet(scroll.render());
-  					Lampa.Controller.collectionFocus(last || false, scroll.render());
-  				},
-  				right: function right() {
-  					Navigator.move('right');
-  					Lampa.Controller.enable('tv_line');
-  				},
-  				left: function left() {
-  					if (Navigator.canmove('left')) Navigator.move('left');
-  					else if (_this.onLeft) _this.onLeft();
-  					else Lampa.Controller.toggle('menu');
-  				},
-  				down: this.onDown,
-  				up: this.onUp,
-  				gone: function gone() {},
-  				back: this.onBack
-  			});
-  			Lampa.Controller.toggle('tv_line');
-  		};
-  		this.render = function () {
-  			return content;
-  		};
-  		this.destroy = function () {
-  			Lampa.Arrays.destroy(items);
-  			scroll.destroy();
-  			content.remove();
-  			items = null;
-  		};
-  	};
-  	this.password = function (call) {
-  		Lampa.Input.edit({
-  			value: "",
-  			title: "Введите пароль доступа",
-  			free: true,
-  			nosave: true
-  		}, function (t) {
-  			if (Lampa.Storage.get('mods_password') == t) {
-  				Lampa.Controller.toggle('content');
-  				call();
-  			} else {
-  				Lampa.Noty.show('Неверный пароль.');
-  				Lampa.Controller.toggle('content');
-  			}
-  		});
-  	};
-  	this.addicon = function (name, card) {
-  		card.find('.card__icons-inner').append('<div class="card__icon icon--' + name + '"></div>');
-  	};
-  	this.favorite = function (data, card) {
-  		var _this = this;
-  		if (!cache[cache_name] || cache[cache_name]&&cache[cache_name].indexOf(data.name) == - 1) {
-  			if(!cache[cache_name]) cache[cache_name] = [data.name];
-  			else cache[cache_name].push(data.name);
-  		} else {
-  			Lampa.Arrays.remove(cache[cache_name], data.name);
-  			Lampa.Storage.set('fav_chns', cache);
-  		}
-  		card.find('.card__icons').remove();
-  		if (cache[cache_name].indexOf(data.name) > - 1) _this.addicon('book', card);
-			Lampa.Storage.set('fav_chns', cache);
-			searched = true;
-			_this.back();
-  	};
-  	this.calcProtcent = function (start, finish, now) {
-  		return (new Date(now).getTime() - new Date(start).getTime()) / (new Date(finish).getTime() - new Date(start).getTime()) * 100;
-  	};
-  	this.tvtable = function (DATA, now) {
-  		function parseTime(time) {
-  			var date = time;
-  			var sec = (time % 100) + '0';
-  			var min = Math.floor(date / 100) % 100;
-  			var hour = Math.floor(date / 10000) % 100;
-  			var day = Math.floor(date / 1000000) % 100;
-  			var month = Math.floor(date / 100000000) % 100;
-  			var year = Math.floor(date / 10000000000);
-  			return year + "-" + (month < 10 ? '0' + month : month) + "-" + (day < 10 ? '0' + day : day) + "T" + (hour < 10 ? '0' + hour : hour) + ":" + (min < 10 ? '0' + min : min) + ":" + sec;
-  		}
-  
-  		function timeConverter(UNIX_timestamp) {
-  			var a = new Date(UNIX_timestamp * 1000);
-  
-  			function addLeadZero(val) {
-  				if (val < 10) return '0' + val;
-  				return val;
-  			}
-  			var date = [
-  					a.getFullYear(),
-  					addLeadZero(a.getMonth() + 1),
-  					addLeadZero(a.getDate())
-  				].join('-');
-  			var time = [
-  					addLeadZero(a.getHours()),
-  					addLeadZero(a.getMinutes()),
-  					addLeadZero(a.getSeconds())
-  				].join(':');
-  			return date + ' ' + time;
-  		}
-  
-  		function getT(a) {
-  			function addLeadZero(val) {
-  				if (val < 10) return '0' + val;
-  				return val;
-  			}
-  			var date = [
-  					a.getFullYear(),
-  					addLeadZero(a.getMonth() + 1),
-  					addLeadZero(a.getDate())
-  				].join('-');
-  			var time = [
-  					addLeadZero(a.getHours()),
-  					addLeadZero(a.getMinutes()),
-  					addLeadZero(a.getSeconds())
-  				].join(':');
-  			return date + ' - ' + time;
-  		}
-  
-  		function leftTime(end) {
-  			var EndTime = new Date(end);
-  			var NowTime = new Date(timenow());
-  			var t = EndTime.getTime() - NowTime.getTime();
-  			var h = Math.floor(t / 1000 / 60 / 60 % 24);
-  			var m = Math.floor(t / 1000 / 60 % 60);
-  			var s = Math.floor(t / 1000 % 60);
-  			if (h < 10) h = "0" + h;
-  			if (m < 10) m = "0" + m;
-  			if (s < 10) s = "0" + s;
-  			var html = (h > 0 && h + ":" || '') + m + ":" + s;
-  			return html;
-  		}
-  
-  		function next(g) {
-  			_this.tvtable({
-  				name: g.item.title.split('-')[1].trim(),
-  				id: g.item.id
-  			}, 'player');
-  		}
-  
-  		function clear() {
-  			clearInterval(timer);
-  			timer = null;
-  			Lampa.PlayerPlaylist.listener.remove('select', next);
-  			Lampa.Player.render().find('#efir, #title_epg').remove();
-  		}
-  		clear();
-  
-  		function timenow() {
-  			var date = new Date(),
-  				time = date.getTime(),
-  				ofst = parseInt((localStorage.getItem('time_offset') == null ? 'n0' : localStorage.getItem('time_offset')).replace('n', ''));
-  			date = new Date(time + ofst * 1000 * 60 * 60);
-  			time = [date.getHours(), date.getMinutes(), date.getSeconds(), date.getDate(), date.getMonth(), date.getFullYear()];
-  			return time[5] + "-" + ((time[4] + 1) < 10 ? '0' + (time[4] + 1) : (time[4] + 1)) + "-" + (time[3] < 10 ? '0' + time[3] : time[3]) + " " + (time[0] < 10 ? '0' + time[0] : time[0]) + ":" + (time[1] < 10 ? '0' + time[1] : time[1]) + ":" + (time[2] < 10 ? '0' + time[2] : time[2]);
-  		}
-  		var _this = this;
-  		var wrap = Lampa.Template.get('card_watched', {});
-  		var enabled = Lampa.Controller.enabled().name;
-  		var epg = $('<div class="lmtv"></div>');
-  		if (now == 'tvtable' && $('body').find('.modal').length == 0) Lampa.Modal.open({
-  			title: 'ТВ программа',
-  			html: Lampa.Template.get('modal_loading'),
-  			size: 'medium',
-  			onBack: function onBack() {
-  				Lampa.Modal.close();
-  				Lampa.Controller.toggle(Lampa.Player.opened() ? 'player' : 'content');
-  				clearInterval(timer);
-  				timer = null;
-  			}
-  		});
-  		this.parseEpg(DATA.name, DATA.id).then(function (json) {
-  			json.epg_data.forEach(function (itm) {
-  				var proc = _this.calcProtcent(timeConverter(itm.time), timeConverter(itm.time_to), timenow());
-  				var ico = '<svg width="24px" height="24px" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="radioIconTitle" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" color="#000000">  <path d="M5.44972845 6C2.18342385 9.2663046 2.18342385 14.7336954 5.44972845 18M8.59918369 8C6.46693877 10.1322449 6.46693877 13.8677551 8.59918369 16M18.5502716 18C21.8165761 14.7336954 21.8165761 9.2663046 18.5502716 6M15.4008163 16C17.5330612 13.8677551 17.5330612 10.1322449 15.4008163 8"/> <circle cx="12" cy="12" r="1"/> </svg>';
-  				var bars = '<div class="efir_bar"><div class="player-panel__timeline"><div class="player-panel__position" style="width:' + proc + '%"><div></div></div><div class="player-panel__time" style="bottom:-760%;background: rgba(0, 0, 0,.5)!important;left:' + proc + '%">' + leftTime(timeConverter(itm.time_to)) + '</div></div></div>';
-  				var efir = timeConverter(itm.time_to) > timenow() && timeConverter(itm.time) < timenow();
-  				if (timeConverter(itm.time_to) > timenow()) epg.append(Lampa.Template.get('notice', {
-  					time: '<span time-start="' + timeConverter(itm.time) + '">' + timeConverter(itm.time).split(' ')[1].slice(0, -3) + '</span> - <span time-stop="' + timeConverter(itm.time_to) + '">' + timeConverter(itm.time_to).split(' ')[1].slice(0, -3) + '</span>',
-  					title: (efir && '<div style="float:left;position:relative;margin-right:.5em;bottom:.2em;width: 1.5em;height: 1.5em;">' + ico + '</div>' || '') + (itm.name || ''),
-  					descr: (efir && bars || '') + (itm.descr && '<br>' + itm.descr || '')
-  				}));
-  			});
-  			if (now == 'player') {
-  				Lampa.PlayerPlaylist.listener.follow('select', next);
-  				if ($('.notice:eq(1) .notice__time', epg).html()) {
-  					if (Lampa.Player.render().find('#title_epg').length == 0) Lampa.Player.render().find('.player-info__name').append('<span id="title_epg"></span>');
-  					Lampa.Player.render().find('#title_epg').text(' - Сейчас: ' + $('.notice:eq(0) .notice__title', epg).text());
-  					var s = $($('.notice:first-child .notice__time', epg).html().split(' - ')[0]).attr('time-start').split(' ')[1].slice(0, -3);
-  					var f = $($('.notice:first-child .notice__time', epg).html().split(' - ')[1]).attr('time-stop').split(' ')[1].slice(0, -3);
-  					$('.notice:eq(1) .notice__title', epg).text() && Lampa.Player.render().find('.value--speed span').html('<b>Далее:</b> ' + $('.notice:eq(1) .notice__title', epg).text() + ' (' + s + ' - ' + f + ')');
-  					if (Lampa.Player.render().find('#efir').length == 0) Lampa.Player.render().find('.player-info__values').after('<div id="efir" style="margin-top:.5em"></div>');
-  					Lampa.Player.render().find('#efir').html(epg.find('.notice:first-child .efir_bar').html());
-  				}
-  			} else Lampa.Modal.update(epg.find('.notice').length ? epg : $('<div>Программа не найдена</div>'));
-  			if ($('.notice:first-child .notice__time', epg).html()) timer = setInterval(function () {
-  				var s = $($('.notice:first-child .notice__time', epg).html().split(' - ')[0]).attr('time-start');
-  				var f = $($('.notice:first-child .notice__time', epg).html().split(' - ')[1]).attr('time-stop');
-  				var proc = _this.calcProtcent(s, f, timenow());
-  				var left = leftTime(f);
-  				if (left == '00:00') {
-  					clear();
-  					setTimeout(function () {
-  						_this.tvtable(DATA, now);
-  					}, 3000);
-  				}
-  				if ($('.player-info__body #efir')[0] || $('.modal .notice')[0]) {
-  					var body = now == 'player' ? Lampa.Player.render() : epg;
-  					body.find('.notice:first-child .efir_bar .player-panel__position, #efir .player-panel__position').css({
-  						width: proc + '%'
-  					});
-  					body.find('.notice:first-child .efir_bar .player-panel__time, #efir .player-panel__time').text(left).css({
-  						left: proc + '%'
-  					});
-  				}
-  			}, 1000);
-  		}).catch(function (error) {
-  			Lampa.Modal.update(epg.find('.notice').length ? epg : $('<div>Программа не найдена</div>'));
-  		});
-  		Lampa.Player.callback(function () {
-  			clear();
-  			Lampa.Controller.toggle('content');
-  		});
-  	};
-  	this.parseEpg = function (name, id) {
-  		return new Promise(function (resolve, reject) {
-  			network.clear();
-  			network.timeout(10000);
-  			network.silent(API + 'epg/'+id, function (json) {
-  				resolve(json);
-  			}, function (a, c) {
-  				Lampa.Noty.show(network.errorDecode(a, c));
-  			});
-  		});
-  	};
-  	this.empty = function (msg) {
-  		var empty = new Lampa.Empty();
-			html.append(empty.render());
-			_this1.start = empty.start;
-			_this1.activity.loader(false);
-			_this1.activity.toggle();
-  	};
-  	this.clear = function (find) {
-  		object.page = 1;
-  		last = false;
-  		items = [];
-  		body.empty();
-  		Lampa.Arrays.destroy(items);
-  		scroll.reset();
-  		if (find) scroll.clear();
-  		this.activity.loader(false);
-  	};
-  	this.back = function () {
-  		if (searched) {
-  		  var next = Lampa.Arrays.clone(object);
-  			delete next.activity;
-  			Lampa.Activity.push(next);
-  			searched = false;
-  		} else Lampa.Activity.backward();
-  	};
-  	this.down = function () {
-  		active++;
-  		active = Math.min(active, items.length - 1);
-  		items[active].toggle();
-  		scroll.update(items[active].render());
-  	};
-  	this.up = function () {
-  		active--;
-  		if (active < 0) {
-  			active = 0;
-  			_this1.toggleFilter();
-  		} else {
-  			items[active].toggle();
-  			scroll.update(items[active].render());
-  		}
-  	};
-  	this.toggleFilter = function () {
-  		var _this = this;
-  		Lampa.Controller.add('tv_filter', {
-  			toggle: function toggle() {
-  				Lampa.Controller.collectionSet(filter.render());
-  				Lampa.Controller.collectionFocus(false, filter.render());
-  			},
-  			right: function right() {
-  				Navigator.move('right');
-  			},
-  			left: function left() {
-  				if (Navigator.canmove('left')) Navigator.move('left');
-  				else if (_this.onLeft) _this.onLeft();
-  				else Lampa.Controller.toggle('menu');
-  			},
-  			down: this.start,
-  			up: function () {
-  				Lampa.Controller.toggle('head');
-  			},
-  			gone: function gone() {},
-  			back: this.back
-  		});
-  		Lampa.Controller.toggle('tv_filter');
-  	};
-  	this.start = function () {
-  		Lampa.Controller.add('content', {
-  			toggle: function toggle() {
-  				if (!body.find('.card').length && items.length) {
-  					items[active].toggle();
-  				} else {
-  					Lampa.Controller.collectionSet(scroll.render(), html, body);
-  					Lampa.Controller.collectionFocus(last || false, scroll.render());
-  				}
-  			},
-  			left: function left() {
-  				if (Navigator.canmove('left')) {
-  					Navigator.move('left');
-  				} else Lampa.Controller.toggle('menu');
-  			},
-  			right: function right() {
-  				Navigator.move('right');
-  			},
-  			up: function up() {
-  				if (Navigator.canmove('up')) Navigator.move('up');
-  				else Lampa.Controller.toggle('head');
-  			},
-  			down: function down() {
-  				if (Navigator.canmove('down')) Navigator.move('down');
-  			},
-  			back: this.back
-  		});
-  		Lampa.Controller.toggle('content');
-  	};
-  	this.pause = function () {};
-  	this.stop = function () {};
-  	this.render = function () {
-  		return html;
-  	};
-  	this.destroy = function () {
-  		network.clear();
-  		Lampa.Arrays.destroy(items);
-  		scroll.destroy();
-  		html.remove();
-  		items = null;
-  		network = null;
-  	};
-  }
-  
+
+
 	function collection(object) {
 		var network = new Lampa.Reguest();
 		var scroll = new Lampa.Scroll({
@@ -7562,8 +6481,7 @@
 		window.plugin = true;
 		Lampa.Component.add('forktv', forktv);
 		Lampa.Component.add('Radio_n', Radio_n);
-		Lampa.Component.add('modss_tv', modss_tv);
-		Lampa.Component.add('modss_online', component);
+				Lampa.Component.add('modss_online', component);
 		Lampa.Component.add('collection', collection);
 		Lampa.Template.add('onlines_v1', "<div class='online onlines_v1 selector'><div class='online__body'><div style='position: absolute;left: 0;top: -0.3em;width: 2.4em;height: 2.4em'><svg style='height: 2.4em; width:  2.4em;' viewBox='0 0 128 128' fill='none' xmlns='http://www.w3.org/2000/svg'>   <circle cx='64' cy='64' r='56' stroke='white' stroke-width='16'/>   <path d='M90.5 64.3827L50 87.7654L50 41L90.5 64.3827Z' fill='white'/></svg>  </div><div class='online__title' style='padding-left: 2.1em;'>{title}</div><div class='online__quality' style='padding-left: 3.4em;'>{quality}{info}</div> </div></div>");
 		Lampa.Template.add('online_folder', "<div class='online selector'> <div class='online__body'><div style='position: absolute;left: 0;top: -0.3em;width: 2.4em;height: 2.4em'>    <svg style='height: 2.4em; width:  2.4em;' viewBox='0 0 128 112' fill='none' xmlns='http://www.w3.org/2000/svg'>   <rect y='20' width='128' height='92' rx='13' fill='white'/>   <path d='M29.9963 8H98.0037C96.0446 3.3021 91.4079 0 86 0H42C36.5921 0 31.9555 3.3021 29.9963 8Z' fill='white' fill-opacity='0.23'/>   <rect x='11' y='8' width='106' height='76' rx='13' fill='white' fill-opacity='0.51'/>    </svg></div><div class='online__title' style='padding-left: 2.1em;'>{title}</div><div class='online__quality' style='padding-left: 3.4em;'>{quality}{info}</div> </div>\n    </div>");
@@ -8263,9 +7181,9 @@
 		});
 		Lampa.Listener.follow('activity', function (e) {
 			if(e.type == 'archive' && e.component == 'full') {
-		  	Modss.online(e.object.card);
 		  } 
-			if (e.component == 'onlines_v1' && e.type == 'destroy') {
+			if (e.component == 'modss_online' && e.type == 'destroy') {
+		  	Modss.online(e.object.movie);
 				Modss.last_view(e.object.movie);
 			}
 		});
@@ -8454,7 +7372,124 @@
 						else item.hide();
 					}
 				});
-
+/*				//HDRezka
+				Lampa.SettingsApi.addParam({
+					component: 'settings_modss',
+					param: {
+						name: 'rezka_param',
+						type: 'static', //доступно select,input,trigger,title,static
+						default: true
+					},
+					field: {
+						name: '<div class="settings-folder" style="padding:0!important"><div style="width:1.8em;height:1.3em;padding-right:.5em"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"></path><path d="M3 3h18a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm4.5 8.25V9H6v6h1.5v-2.25h2V15H11V9H9.5v2.25h-2zm7-.75H16a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-1.5v-3zM13 9v6h3a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-3z" fill="#ffffff" class="fill-000000"></path></svg></div><div style="font-size:1.3em">HDRezka</div></div>'
+					},
+					onRender: function (item) {
+						if (Lampa.Storage.field('mods_onl')) {
+							item.show();
+							$('.settings-param__name', item).before('<div class="settings-param__status '+(Lampa.Storage.field("online_rezka_status") === true ? 'active' : 'error')+'"></div>');
+						} else item.hide();
+						item.on('hover:enter', function () {
+							Lampa.Settings.create('rezka_param');
+						});
+					}
+				});
+				Lampa.SettingsApi.addParam({
+					component: 'rezka_param',
+					param: {
+						name: 'mods_onl_rezka_status',
+						type: 'title', //доступно select,input,trigger,title,static
+						default: ''
+					},
+					onRender: function (item){
+					  $('span', item).before('<div class="settings-param__status '+(Lampa.Storage.field("online_rezka_status") === true ? 'active' : 'error')+'"></div>');
+					},
+					field: {
+						name: Lampa.Lang.translate('settings_server_auth')+' HDRezka'
+					}
+				});
+				Lampa.SettingsApi.addParam({
+					component: 'rezka_param',
+					param: {
+						name: 'rezka2_mirror',
+						type: 'input', //доступно select,input,trigger,title,static
+						values: '',
+						placeholder: Lampa.Lang.translate('settings_server_not_specified'), 
+						default: ''
+					},
+					field: {
+						name: Lampa.Lang.translate('online_rezka2_mirror')
+					}
+				});
+				Lampa.SettingsApi.addParam({
+					component: 'rezka_param',
+					param: {
+						name: 'mods_onl_rezka_login',
+						type: 'input', //доступно select,input,trigger,title,static
+						values: '',
+						placeholder: Lampa.Lang.translate('settings_server_not_specified'), 
+						default: ''
+					},
+					field: {
+						name: Lampa.Lang.translate('settings_server_login')
+					}
+				});
+				Lampa.SettingsApi.addParam({
+					component: 'rezka_param',
+					param: {
+						name: 'mods_onl_rezka_password',
+						type: 'input', //доступно select,input,trigger,title,static
+						values: '',
+						placeholder: Lampa.Lang.translate('settings_server_not_specified'), 
+						default: ''
+					},
+					field: {
+						name: Lampa.Lang.translate('settings_server_password')
+					},
+					onChange: function (value) {
+						if (value && Lampa.Storage.field('mods_onl_rezka_login')) Login();
+						else Logout();
+						var rezka_login_status = $('.settings-param__status').removeClass('active error wait').addClass('wait');
+						function Login(success, error) {
+              var url = 'http://hdrezka.co/ajax/login/';
+              var postdata = 'login_name=' + encodeURIComponent(Lampa.Storage.field('mods_onl_rezka_login'));
+              postdata += '&login_password=' + encodeURIComponent(Lampa.Storage.field('mods_onl_rezka_password'));
+              postdata += '&login_not_save=0';
+              Pub.network.clear();
+              Pub.network.timeout(10000);
+              Pub.network.silent(url, function (json) {
+                if (json && (json.success || json.message == 'Уже авторизован на сайте. Необходимо обновить страницу!')) {
+                  Lampa.Storage.set("online_rezka_status", 'true');
+                  rezka_login_status.removeClass('active error wait').addClass('active');
+                } else {
+                  Lampa.Storage.set("online_rezka_status", 'false');
+                  rezka_login_status.removeClass('active error wait').addClass('error');
+                }
+              }, function (a, c) {
+                Lampa.Noty.show(Pub.network.errorDecode(a, c));
+                rezka_login_status.removeClass('active error wait').addClass('error');
+              }, postdata, {
+                withCredentials: true
+              });
+            }
+            function Logout() {
+              var url = 'https://hdrezkarfv.org/logout/';
+              Pub.network.clear();
+              Pub.network.timeout(8000);
+              Pub.network.silent(url, function (str) {
+                Lampa.Storage.set("online_rezka_status", 'false');
+                Lampa.Noty.show(Lampa.Lang.translate('torrent_serial_date'));
+                rezka_login_status.removeClass('active error wait').addClass('active');
+              }, function (a, c) {
+                Lampa.Noty.show(Pub.network.errorDecode(a, c));
+                rezka_login_status.removeClass('active error wait').addClass('error');
+              }, false, {
+                dataType: 'text',
+                withCredentials: true
+              });
+            }
+					}
+				});
+*/
 				//Filmix
 				Lampa.SettingsApi.addParam({
 					component: 'settings_modss',
@@ -8670,154 +7705,7 @@
 						});
 						if (!Lampa.Storage.get('pub_access_token') || !Lampa.Storage.get('logined_pub')) item.hide();
 					}
-				});				//TV
-				Lampa.SettingsApi.addParam({
-					component: 'settings_modss',
-					param: {
-						name: 'mods_tv',
-						type: 'trigger', //доступно select,input,trigger,title,static
-						default: false
-					},
-					field: {
-						name: Lampa.Lang.translate('params_tv_enable'),
-						description: Lampa.Lang.translate('params_tv_enable_descr')
-					},
-					onChange: function (value) {
-						Modss.tv_modss();
-						Lampa.Settings.update();
-					}
 				});
-				Lampa.SettingsApi.addParam({
-					component: 'settings_modss',
-					param: {
-						name: 'modss_tv_param',
-						type: 'static', //доступно select,input,trigger,title,static
-						default: true
-					},
-					field: {
-						name: '<div class="settings-folder" style="padding:0!important"><div style="width:1.8em;height:1.3em;padding-right:.5em"><svg width="26px" height="26px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" color="#fff" fill="currentColor" class="bi bi-tv"><path d="M2.5 13.5A.5.5 0 0 1 3 13h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zM13.991 3l.024.001a1.46 1.46 0 0 1 .538.143.757.757 0 0 1 .302.254c.067.1.145.277.145.602v5.991l-.001.024a1.464 1.464 0 0 1-.143.538.758.758 0 0 1-.254.302c-.1.067-.277.145-.602.145H2.009l-.024-.001a1.464 1.464 0 0 1-.538-.143.758.758 0 0 1-.302-.254C1.078 10.502 1 10.325 1 10V4.009l.001-.024a1.46 1.46 0 0 1 .143-.538.758.758 0 0 1 .254-.302C1.498 3.078 1.675 3 2 3h11.991zM14 2H2C0 2 0 4 0 4v6c0 2 2 2 2 2h12c2 0 2-2 2-2V4c0-2-2-2-2-2z"/></svg></div><div style="font-size:1.3em">Modss-TV</div></div>',
-					},
-					onRender: function (item) {
-						if (!Lampa.Storage.field('mods_tv')) item.hide();
-						item.on('hover:enter', function () {
-							Lampa.Settings.create('modss_tv_param');
-						});
-					}
-				});
-				Lampa.SettingsApi.addParam({
-					component: 'modss_tv_param',
-					param: {
-						name: 'mods_tv_url',
-						type: 'input', //доступно select,input,trigger,title,static
-						values: '',
-						placeholder: 'Например: https://tva.org.ua/ip/sam/avto-iptv-tva.m3u',
-						default: ''
-					},
-					field: {
-						name: 'Ссылка на плейлист'
-					},
-					onRender: function (item) {
-						if (!Lampa.Storage.field('mods_tv')) item.hide();
-					}
-				});
-				Lampa.SettingsApi.addParam({
-					component: 'modss_tv_param',
-					param: {
-						name: 'mods_tv_source',
-						type: 'select', //доступно select,input,trigger,title,static
-						values: {
-							culik: 'Kulik',
-							free: 'FreeTv',
-							url: 'Свой'
-						},
-						default: 'culik'
-					},
-					field: {
-						name: 'Источник',
-						description: 'Источник встроенных каналов'
-					},
-					onRender: function (item) {
-						if (!Lampa.Storage.field('mods_tv')) item.hide();
-					},
-					onChange: function (value) {
-						if (!Lampa.Storage.field('mods_tv_url') && value == 'url') Lampa.Storage.set('mods_tv_source', 'culik');
-						Lampa.Settings.update();
-					}
-				});
-				Lampa.SettingsApi.addParam({
-					component: 'modss_tv_param',
-					param: {
-						name: 'mods_tv_style',
-						type: 'select', //доступно select,input,trigger,title,static
-						values: {
-							line: 'Строчный',
-							vert: 'Вертикальный',
-							cats: 'Категории'
-						},
-						default: 'line'
-					},
-					field: {
-						name: 'Тип навигации',
-						description: 'Вид отображения списка каналов'
-					},
-					onRender: function (item) {
-						if (!Lampa.Storage.field('mods_tv')) item.hide();
-					}
-				});
-				Lampa.SettingsApi.addParam({
-					component: 'modss_tv_param',
-					param: {
-						name: 'mods_tv_butt_ch',
-						type: 'trigger', //доступно select,input,trigger,title,static
-						default: true
-					},
-					field: {
-						name: 'Переключение каналов',
-						description: 'Позволяет переключать каналы кнопками переключения каналов на пульте'
-					},
-					onRender: function (item) {
-						if (!Lampa.Storage.field('mods_tv')) item.hide();
-					}
-				});
-				Lampa.SettingsApi.addParam({
-					component: 'modss_tv_param',
-					param: {
-						name: 'mods_tv_cat_clear',
-						type: 'static', //доступно select,input,trigger,title,static
-						default: ''
-					},
-					field: {
-						name: Lampa.Lang.translate('title_fork_clear'),
-						description: Lampa.Lang.translate('title_fork_clear_descr')
-					},
-					onRender: function (item) {
-						if (!Lampa.Storage.field('mods_tv')) item.hide();
-						item.on('hover:enter', function () {
-							Lampa.Storage.set('Modss_tv_cat', '');
-							Lampa.Noty.show(Lampa.Lang.translate('title_fork_clear_noty'));
-						});
-					}
-				});
-				Lampa.SettingsApi.addParam({
-					component: 'modss_tv_param',
-					param: {
-						name: 'mods_tv_fav_clear',
-						type: 'static', //доступно select,input,trigger,title,static
-						default: ''
-					},
-					field: {
-						name: Lampa.Lang.translate('title_tv_clear_fav'),
-						description: Lampa.Lang.translate('title_tv_clear__fav_descr')
-					},
-					onRender: function (item) {
-						if (!Lampa.Storage.field('mods_tv')) item.hide();
-						item.on('hover:enter', function () {
-							Lampa.Storage.set('fav_chns', '');
-							Lampa.Noty.show(Lampa.Lang.translate('title_tv_clear_fav_noty'));
-						});
-					}
-				});
-
 				//ForkTV
 				Lampa.SettingsApi.addParam({
 					component: 'settings_modss',

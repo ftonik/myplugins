@@ -28,7 +28,6 @@
         if (status.data.popular) fulldata.push(status.data.popular);
         if (status.data.added) fulldata.push(status.data.added);
         if (status.data.trending) fulldata.push(status.data.trending);
-        console.log(fulldata);
         if (fulldata.length) oncomplite(fulldata);else onerror();
       };
 
@@ -689,21 +688,26 @@
       Lampa.Component.add('trailers_full', Component);
       Lampa.Template.add('trailer', "\n        <div class=\"card selector card--trailer\">\n            <div class=\"card__view\">\n                <img src=\"./img/img_load.svg\" class=\"card__img\">\n            </div>\n            <div class=\"card__promo\">\n                <div class=\"card__promo-text\">\n                    <div class=\"card__title\"></div>\n                </div>\n                <div class=\"card__details\"></div>\n            </div>\n            <div class=\"card__play\">\n                <img src=\"./img/icons/player/play.svg\">\n            </div>\n        </div>\n    ");
       Lampa.Template.add('trailer_style', "\n        <style>\n        .card.card--trailer,\n        .card-more.more--trailers {\n            width: 25.7em;\n        }\n\n        .card.card--trailer .card__view {\n            padding-bottom: 56%;\n            margin-bottom: 0;\n        }\n\n        .card.card--trailer .card__details{\n            margin-top: 0.8em;\n        }\n        .card.card--trailer .card__play{\n            position: absolute;\n            top: 1.4em;\n            left: 1.5em;\n            background: #000000b8;\n            width: 2.2em;\n            height: 2.2em;\n            border-radius: 100%;\n            text-align: center;\n            padding-top: 0.6em;\n        }\n        .card.card--trailer .card__play img{\n            width: 0.9em;\n            height: 1em;\n        }\n\n        .card-more.more--trailers .card-more__box{\n            padding-bottom: 56%;\n        }\n\n        .category-full--trailers .card{\n            margin-bottom: 1.5em;\n        }\n        .category-full--trailers .card .card__promo{\n            left: 0.75em;\n            right: 0.75em;\n        }\n        .category-full--trailers .card{\n            width: 33.3%;\n        }\n        \n\n        @media screen and (max-width: 767px) {\n            .category-full--trailers .card{\n                width: 50%;\n            }\n        }\n        @media screen and (max-width: 400px) {\n            .category-full--trailers .card{\n                width: 100%;\n            }\n        }\n        </style>\n    ");
-      Lampa.Listener.follow('app', function (e) {
-        if (e.type == 'ready') {
-          var button = $("<li class=\"menu__item selector\" data-action=\"sisi\">\n                <div class=\"menu__ico\">\n                    <svg height=\"70\" viewBox=\"0 0 80 70\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n                    <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M71.2555 2.08955C74.6975 3.2397 77.4083 6.62804 78.3283 10.9306C80 18.7291 80 35 80 35C80 35 80 51.2709 78.3283 59.0694C77.4083 63.372 74.6975 66.7603 71.2555 67.9104C65.0167 70 40 70 40 70C40 70 14.9833 70 8.74453 67.9104C5.3025 66.7603 2.59172 63.372 1.67172 59.0694C0 51.2709 0 35 0 35C0 35 0 18.7291 1.67172 10.9306C2.59172 6.62804 5.3025 3.2395 8.74453 2.08955C14.9833 0 40 0 40 0C40 0 65.0167 0 71.2555 2.08955ZM55.5909 35.0004L29.9773 49.5714V20.4286L55.5909 35.0004Z\" fill=\"white\"/>\n                    </svg>\n                </div>\n                <div class=\"menu__text\">".concat(Lampa.Lang.translate('title_trailers'), "</div>\n            </li>"));
-          button.on('hover:enter', function () {
-            Lampa.Activity.push({
-              url: '',
-              title: Lampa.Lang.translate('title_trailers'),
-              component: 'trailers_main',
-              page: 1
-            });
+
+      function add() {
+        var button = $("<li class=\"menu__item selector\" data-action=\"sisi\">\n            <div class=\"menu__ico\">\n                <svg height=\"70\" viewBox=\"0 0 80 70\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n                <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M71.2555 2.08955C74.6975 3.2397 77.4083 6.62804 78.3283 10.9306C80 18.7291 80 35 80 35C80 35 80 51.2709 78.3283 59.0694C77.4083 63.372 74.6975 66.7603 71.2555 67.9104C65.0167 70 40 70 40 70C40 70 14.9833 70 8.74453 67.9104C5.3025 66.7603 2.59172 63.372 1.67172 59.0694C0 51.2709 0 35 0 35C0 35 0 18.7291 1.67172 10.9306C2.59172 6.62804 5.3025 3.2395 8.74453 2.08955C14.9833 0 40 0 40 0C40 0 65.0167 0 71.2555 2.08955ZM55.5909 35.0004L29.9773 49.5714V20.4286L55.5909 35.0004Z\" fill=\"white\"/>\n                </svg>\n            </div>\n            <div class=\"menu__text\">".concat(Lampa.Lang.translate('title_trailers'), "</div>\n        </li>"));
+        button.on('hover:enter', function () {
+          Lampa.Activity.push({
+            url: '',
+            title: Lampa.Lang.translate('title_trailers'),
+            component: 'trailers_main',
+            page: 1
           });
-          $('.menu .menu__list').eq(0).append(button);
-          $('body').append(Lampa.Template.get('trailer_style', {}, true));
-        }
-      });
+        });
+        $('.menu .menu__list').eq(0).append(button);
+        $('body').append(Lampa.Template.get('trailer_style', {}, true));
+      }
+
+      if (window.appready) add();else {
+        Lampa.Listener.follow('app', function (e) {
+          if (e.type == 'ready') add();
+        });
+      }
     }
 
     if (!window.plugin_trailers_ready) startPlugin();

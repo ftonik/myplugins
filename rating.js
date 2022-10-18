@@ -2,12 +2,13 @@
 	'use strict';
 
 	function rating_kp_imdb(card) {
+		var network = new Lampa.Reguest();
 		var clean_title = card.title.replace(/[ .,:;!?]+/g, ' ').trim();
 		var search_date = card.release_date || card.first_air_date || card.last_air_date || '0000';
 		var search_year = parseInt((search_date + '').slice(0, 4));
 		var orig = card.original_title || card.original_name;
-		//var kp_prox = Lampa.Storage.field('online_mod_proxy_kp') === true ? 'https://lampa-cors.herokuapp.com/' : '';
-		var kp_prox = Lampa.Storage.field('online_mod_proxy_kp') === true ? 'https://cors-fallback.herokuapp.com/' : '';
+		var kp_prox = Lampa.Storage.field('online_mod_proxy_kp') === true ? 'https://lampa-cors.herokuapp.com/' : '';
+		//var kp_prox = Lampa.Storage.field('online_mod_proxy_kp') === true ? 'https://cors-fallback.herokuapp.com/' : '';
 		var params = {
 			id: card.id,
 			url: kp_prox + 'https://kinopoiskapiunofficial.tech/',
@@ -20,112 +21,145 @@
 		getRating();
 
 		function getRating() {
-			var network = new Lampa.Reguest();
 			var movieRating = _getCache(params.id);
 			if (movieRating) {
 				return _showRating(movieRating[params.id]);
 			} else {
-				network.clear();
-				network.timeout(5000);
-				network.silent(params.url + 'api/v2.1/films/search-by-keyword?keyword=' + encodeURIComponent(clean_title), function (json) {
-					var items = json.films || [];
-					var is_sure = false;
-					if (card.imdb_id) {
-						var tmp = items.filter(function (elem) {
-							return (elem.imdb_id || elem.imdbId) == card.imdb_id;
-						});
-						if (tmp.length) {
-							items = tmp;
-							is_sure = true;
-						}
-					}
-					var cards = items.filter(function (c) {
-						var year = c.start_date || c.year || '0000';
-						c.tmp_year = parseInt((year + '').slice(0, 4));
-						return !c.tmp_year || !search_year || c.tmp_year > search_year - 2 && c.tmp_year < search_year + 2;
+				searchFilm();
+			}
+		}
+
+		function searchFilm() {
+			var url = params.url;
+			var url_by_title = Lampa.Utils.addUrlComponent(url + 'api/v2.1/films/search-by-keyword', 'keyword=' + encodeURIComponent(clean_title));
+			if (card.imdb_id) url = Lampa.Utils.addUrlComponent(url + 'api/v2.2/films', 'imdbId=' + encodeURIComponent(card.imdb_id));
+			else url = url_by_title;
+			network.clear();
+			network.timeout(5000);
+			network.silent(url, function (json) {
+				if (json.items && json.items.length) chooseFilm(json.items);
+				else if (json.films && json.films.length) chooseFilm(json.films);
+				else if (card.imdb_id) {
+					network.clear();
+					network.timeout(5000);
+					network.silent(url_by_title, function (json) {
+						if (json.items && json.items.length) chooseFilm(json.items);
+						else if (json.films && json.films.length) chooseFilm(json.films);
+						else chooseFilm([]);
+					}, function (a, c) {
+						Lampa.Noty.show('Рейтинг KP   ' + network.errorDecode(a, c));
+					}, false, {
+						headers: params.headers
 					});
-					if (orig) {
-						var _tmp = cards.filter(function (elem) {
-							return equalTitle(elem.orig_title || elem.nameOriginal || elem.nameEn || elem.nameRu, orig);
-						});
-						if (_tmp.length) {
-							cards = _tmp;
-							is_sure = true;
+				} else chooseFilm([]);
+			}, function (a, c) {
+				Lampa.Noty.show('Рейтинг KP   ' + network.errorDecode(a, c));
+			}, false, {
+				headers: params.headers
+			});
+		}
+
+		function chooseFilm(items) {
+			if (items && items.length) {
+				var is_sure = false;
+				if (card.imdb_id) {
+					var tmp = items.filter(function (elem) {
+						return (elem.imdb_id || elem.imdbId) == card.imdb_id;
+					});
+					if (tmp.length) {
+						items = tmp;
+						is_sure = true;
+					}
+				}
+				var cards = items.filter(function (c) {
+					var year = c.start_date || c.year || '0000';
+					c.tmp_year = parseInt((year + '').slice(0, 4));
+					return !c.tmp_year || !search_year || c.tmp_year > search_year - 2 && c.tmp_year < search_year + 2;
+				});
+				if (orig) {
+					var _tmp = cards.filter(function (elem) {
+						return equalTitle(elem.orig_title || elem.nameOriginal || elem.en_title || elem.nameEn || elem.ru_title || elem.nameRu, orig);
+					});
+					if (_tmp.length) {
+						cards = _tmp;
+						is_sure = true;
+					}
+				}
+				if (card.title) {
+					var _tmp2 = cards.filter(function (elem) {
+						return equalTitle(elem.title || elem.ru_title || elem.nameRu || elem.en_title || elem.nameEn || elem.orig_title || elem.nameOriginal, card.title);
+					});
+					if (_tmp2.length) {
+						cards = _tmp2;
+						is_sure = true;
+					}
+				}
+				if (cards.length > 1 && search_year) {
+					var _tmp3 = cards.filter(function (c) {
+						return c.tmp_year == search_year;
+					});
+					if (_tmp3.length) cards = _tmp3;
+				}
+				if (cards.length == 1 && is_sure) {
+					var id = cards[0].kp_id || cards[0].kinopoiskId || cards[0].filmId;
+					network.clear();
+					network.timeout(5000);
+					network.silent(params.rating_url + id + '.xml', function (str) {
+						var ratingKinopoisk = 0;
+						var ratingImdb = 0;
+						var xml = $($.parseXML(str));
+						var kp_rating = xml.find('kp_rating');
+						if (kp_rating.length) {
+							ratingKinopoisk = parseFloat(kp_rating.text());
 						}
-					}
-					if (card.title) {
-						var _tmp2 = cards.filter(function (elem) {
-							return equalTitle(elem.title || elem.nameRu || elem.nameEn, card.title);
-						});
-						if (_tmp2.length) {
-							cards = _tmp2;
-							is_sure = true;
+						var imdb_rating = xml.find('imdb_rating');
+						if (imdb_rating.length) {
+							ratingImdb = parseFloat(imdb_rating.text());
 						}
-					}
-					if (cards.length > 1 && search_year) {
-						var _tmp3 = cards.filter(function (c) {
-							return c.tmp_year == search_year;
-						});
-						if (_tmp3.length) cards = _tmp3;
-					}
-					if (cards.length == 1 && is_sure) {
-						var id = cards[0].filmId;
+						var movieRating = _setCache(params.id, {
+							kp: ratingKinopoisk,
+							imdb: ratingImdb,
+							timestamp: new Date().getTime()
+						}); // Кешируем данные
+						return _showRating(movieRating, params.id);
+					}, function (a, c) {
 						network.clear();
 						network.timeout(5000);
-						network.silent(params.rating_url + id + '.xml', function (str) {
-							var ratingKinopoisk = 0;
-							var ratingImdb = 0;
-							var xml = $($.parseXML(str));
-							var kp_rating = xml.find('kp_rating');
-							if (kp_rating.length) {
-								ratingKinopoisk = parseFloat(kp_rating.text());
-							}
-							var imdb_rating = xml.find('imdb_rating');
-							if (imdb_rating.length) {
-								ratingImdb = parseFloat(imdb_rating.text());
-							}
-							movieRating = _setCache(params.id, {
-								kp: ratingKinopoisk,
-								imdb: ratingImdb,
+						network.silent(params.url + 'api/v2.2/films/' + id, function (data) {
+							var movieRating = _setCache(params.id, {
+								kp: data.ratingKinopoisk,
+								imdb: data.ratingImdb,
 								timestamp: new Date().getTime()
 							}); // Кешируем данные
 							return _showRating(movieRating, params.id);
 						}, function (a, c) {
-							network.clear();
-							network.timeout(5000);
-							network.silent(params.url + 'api/v2.2/films/' + id, function (data) {
-								movieRating = _setCache(params.id, {
-									kp: data.ratingKinopoisk,
-									imdb: data.ratingImdb,
-									timestamp: new Date().getTime()
-								}); // Кешируем данные
-								return _showRating(movieRating, params.id);
-							}, function (a, c) {
-								Lampa.Noty.show(network.errorDecode(a, c));
-							}, false, {
-								headers: params.headers
-							});
+							Lampa.Noty.show(network.errorDecode(a, c));
 						}, false, {
-							dataType: 'text'
+							headers: params.headers
 						});
-					} else {
-						movieRating = _setCache(params.id, {
-							kp: 0,
-							imdb: 0,
-							timestamp: new Date().getTime()
-						}); // Кешируем данные
-						return _showRating(movieRating);
-					}
-				}, function (a, c) {
-					Lampa.Noty.show('Рейтинг KP   ' + network.errorDecode(a, c));
-				}, false, {
-					headers: params.headers
-				});
+					}, false, {
+						dataType: 'text'
+					});
+				} else {
+					var movieRating = _setCache(params.id, {
+						kp: 0,
+						imdb: 0,
+						timestamp: new Date().getTime()
+					}); // Кешируем данные
+					return _showRating(movieRating);
+				}
+			} else {
+				var _movieRating = _setCache(params.id, {
+					kp: 0,
+					imdb: 0,
+					timestamp: new Date().getTime()
+				}); // Кешируем данные
+				return _showRating(_movieRating);
 			}
 		}
 
 		function equalTitle(t1, t2) {
-			return typeof t1 === 'string' && typeof t2 === 'string' && t1.toLowerCase() === t2.toLowerCase();
+			return typeof t1 === 'string' && typeof t2 === 'string' && t1.toLowerCase().replace(/—/g, '-') === t2.toLowerCase().replace(/—/g, '-');
 		}
 
 		function _getCache(movie) {
